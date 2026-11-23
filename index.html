@@ -350,7 +350,7 @@ footer .no{justify-content:center}
   <div class="wrap stats4">
     <div class="st"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5"/></svg><strong id="yearCount">189</strong><span>2026 年已讀（本）</span></div>
     <div class="st"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM9 9h6M9 13h6"/></svg><strong id="reviewCount">160</strong><span>篇讀後感</span></div>
-    <div class="st"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/></svg><strong>23</strong><span>實體活動</span></div>
+    <div class="st"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/></svg><strong>23</strong><span>實體活動(場)</span></div>
     <div class="st"><svg viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg><strong>30+</strong><span>Podcast《尼采一下》</span></div>
   </div>
 </section>
@@ -491,7 +491,7 @@ $('#listCards').innerHTML=BL.map((c,i)=>`<button class="card bl" data-i="${i}"><
  addEventListener('keydown',e=>{if(!V.classList.contains('on'))return;if(e.key==='Escape')close();if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1)});}
 
 /* ---------- gallery ---------- */
-{const ev=[['ev10.jpg','書桌上的小讀者','w2 h2 low'],['ev2.jpg','朗讀分享','h2'],['ev3.jpg','《臺灣漫遊錄》共讀','h2'],['ev0.jpg','書聚現場','w2'],['ev7.jpg','','w2'],['ev8.jpg','葉真中顯書聚','w2 h2'],['ev5.jpg','聖誕交換書','h2'],['ev4.jpg','大家帶來的書','h2'],['ev9.jpg','大家推薦的書','w2'],['ev1.jpg','書店裡的交換書桌','w2']];
+{const ev=[['ev10.jpg','書桌上的小讀者','w2 h2 low'],['ev2.jpg','朗讀分享','h2'],['ev3.jpg','《臺灣漫遊錄》共讀','h2'],['ev0.jpg','書聚現場','w2'],['ev7.jpg','','w2'],['ev8.jpg','主題書聚','w2 h2'],['ev5.jpg','聖誕book派對','h2'],['ev4.jpg','<書>的大合照','h2'],['ev9.jpg','大家推薦的書','w2'],['ev1.jpg','書店裡的交換書桌','w2']];
 $('#gal').innerHTML=ev.map(([f,c,k])=>`<button class="${k}" data-f="${f}" data-c="${c}"><img src="img/${f}" alt="${c||'書蟲派對活動照片'}" loading="lazy">${c?`<span>${c}</span>`:''}</button>`).join('');
 const lb=$('#lb');
 $('#gal').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('#lbImg').src='img/'+b.dataset.f;$('#lbImg').alt=b.dataset.c;$('#lbCap').textContent=b.dataset.c;lb.classList.add('on');document.body.classList.add('lock');$('#lbX').focus()});
