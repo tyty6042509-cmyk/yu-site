@@ -491,7 +491,7 @@ $('#listCards').innerHTML=BL.map((c,i)=>`<button class="card bl" data-i="${i}"><
  addEventListener('keydown',e=>{if(!V.classList.contains('on'))return;if(e.key==='Escape')close();if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1)});}
 
 /* ---------- gallery ---------- */
-{const ev=[['ev10.jpg','書桌上的小讀者','w2 h2 low'],['ev2.jpg','朗讀分享','h2'],['ev3.jpg','《臺灣漫遊錄》共讀','h2'],['ev0.jpg','書聚現場','w2'],['ev7.jpg','','w2'],['ev8.jpg','主題書聚','w2 h2'],['ev5.jpg','聖誕book派對','h2'],['ev4.jpg','<書>的大合照','h2'],['ev9.jpg','大家推薦的書','w2'],['ev1.jpg','書店裡的交換書桌','w2']];
+{const ev=[['ev10.jpg','書桌上的小讀者','w2 h2 low'],['ev2.jpg','分享環節','h2'],['ev3.jpg','《臺灣漫遊錄》共讀','h2'],['ev0.jpg','書聚現場','w2'],['ev7.jpg','','w2'],['ev8.jpg','主題書聚','w2 h2'],['ev5.jpg','聖誕book派對','h2'],['ev4.jpg','<書>的大合照','h2'],['ev9.jpg','大家推薦的書','w2'],['ev1.jpg','書店裡的交換書桌','w2']];
 $('#gal').innerHTML=ev.map(([f,c,k])=>`<button class="${k}" data-f="${f}" data-c="${c}"><img src="img/${f}" alt="${c||'書蟲派對活動照片'}" loading="lazy">${c?`<span>${c}</span>`:''}</button>`).join('');
 const lb=$('#lb');
 $('#gal').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('#lbImg').src='img/'+b.dataset.f;$('#lbImg').alt=b.dataset.c;$('#lbCap').textContent=b.dataset.c;lb.classList.add('on');document.body.classList.add('lock');$('#lbX').focus()});
