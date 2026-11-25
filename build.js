@@ -127,7 +127,7 @@ footer a{text-decoration:none;border-bottom:1px solid var(--line);margin:0 8px}
 /* 活動紀錄 */
 .evp{margin:22px 0 26px;border-radius:2px;overflow:hidden;background:#111}
 .evp img{width:100%;max-height:440px;object-fit:contain;margin:0 auto}
-.evlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:14px;margin-top:28px}
+.evlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:14px;margin-top:14px}
 .evlist a{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:3px;background:var(--card);text-decoration:none}
 .evlist a:hover{border-color:var(--ink)}
 .evlist img{width:96px;aspect-ratio:1;object-fit:cover;border-radius:2px;filter:saturate(.75)}
@@ -469,6 +469,17 @@ ${paras(e.text)}
   });
 
   // 活動紀錄總表
+  // 依北、中、南、東分區（各區內由新到舊）
+  const REGION = [
+    ['北部', /台北|臺北|新北|基隆|桃園|新竹/],
+    ['中部', /台中|臺中|苗栗|彰化|南投|雲林/],
+    ['南部', /嘉義|台南|臺南|高雄|屏東/],
+    ['東部', /花蓮|台東|臺東|宜蘭/],
+  ];
+  const regionOf = p => (REGION.find(([, rx]) => rx.test(p || '')) || ['其他'])[0];
+  const regions = [...REGION.map(([n]) => n), '其他']
+    .map(name => ({ name, items: evs.filter(e => regionOf(e.place) === name) }))
+    .filter(r => r.items.length);
   const places = [...new Set(evs.map(e => e.place).filter(Boolean))];
   const idx = head({
     title: `書蟲派對活動紀錄：${places.join('、')}讀書會｜${BRAND}`,
@@ -479,7 +490,9 @@ ${paras(e.text)}
   <p class="crumb"><a href="/">Yu聿</a> ／ 書蟲派對活動紀錄</p>
   <h1>書蟲派對活動紀錄</h1>
   <p class="lede">從花蓮的第一場讀書聚會開始，一路走到${places.filter(p => p !== '花蓮').join('、')}。每一場的會後感都收在這裡。</p>
-  <div class="evlist">${evs.map(e => `<a href="${e.url}">${photo(e) ? `<img src="${esc(photo(e))}" alt="" loading="lazy">` : '<span></span>'}<span><small>${esc(e.date)}${e.place ? '・' + esc(e.place) : ''}</small><b>${esc(fullName(e))}</b><small>${esc(cut(flat(e.text), 46))}</small></span></a>`).join('')}</div>
+  <div class="cats">${regions.map(r => `<a href="#${encodeURIComponent(r.name)}">${r.name}<small>${r.items.length}</small></a>`).join('')}</div>
+  ${regions.map(r => `<section class="cat" id="${r.name}"><h2>${r.name} <small class="n">${[...new Set(r.items.map(e => e.place).filter(Boolean))].join('・')}</small></h2>
+  <div class="evlist">${r.items.map(e => `<a href="${e.url}">${photo(e) ? `<img src="${esc(photo(e))}" alt="" loading="lazy">` : '<span></span>'}<span><small>${esc(e.date)}${e.place ? '・' + esc(e.place) : ''}</small><b>${esc(fullName(e))}</b><small>${esc(cut(flat(e.text), 46))}</small></span></a>`).join('')}</div></section>`).join('\n')}
   <section class="cta">
     <h2>下一場，一起來？</h2>
     <p>活動報名都在 Accupass，平常的聊書在 LINE 社群。</p>

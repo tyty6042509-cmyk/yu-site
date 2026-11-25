@@ -382,6 +382,8 @@ a.rcard{text-decoration:none;color:inherit}
 .pager .shpop button{max-width:none;border:0;border-radius:6px;padding:0 10px;min-height:40px;white-space:nowrap}
 .tolib{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:999px;background:var(--ink);color:var(--bg);text-decoration:none;font-size:13px;letter-spacing:.14em;white-space:nowrap}
 .tolib:hover{filter:brightness(1.15)}
+.evmore{display:flex;justify-content:center;padding:4px 20px 30px}
+.lb .lbto{background:#e9e7e3;color:#1c1e23;margin-top:4px}
 .shwrap{position:relative}
 .shrow{clear:both;display:flex;justify-content:flex-end;margin-top:28px}
 .shbtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer;padding:0}
@@ -488,7 +490,7 @@ a.rcard{text-decoration:none;color:inherit}
     <div class="vfoot"><span class="muted">左右滑動翻頁</span><a class="btn ghost" id="vIg" href="#" target="_blank" rel="noopener">在 Instagram 看原文、留言</a></div>
   </div>
 </div>
-<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="活動照片"><button class="x" id="lbX" aria-label="關閉">×</button><img id="lbImg" alt=""><p id="lbCap"></p></div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="活動照片"><button class="x" id="lbX" aria-label="關閉">×</button><img id="lbImg" alt=""><p id="lbCap"></p><a class="tolib lbto" href="/party/">看每一場活動的會後感 →</a></div>
 
 <section class="band" id="lists"><div class="wrap center">
   <p class="no"><b>04</b><i></i>BOOK LISTS</p>
@@ -773,7 +775,7 @@ fetch('events.json').then(r=>r.json()).then(d=>{
   const list=by[file]||[i];
   const blocks=list.map(k=>{const e=evs[k];const paras=(e.text||'').split(/\n+/).filter(x=>x.trim()).map(p=>`<p>${esc(p)}</p>`).join('');
    return `<div class="evbody"><p class="evmeta">${[e.date,e.place].filter(Boolean).map(esc).join(' · ')}</p><h2>${esc(e.title)}</h2>${paras?`<div class="txt">${paras}</div>`:''}${e.ig?`<a class="btn ghost" href="${esc(e.ig)}" target="_blank" rel="noopener">在 Instagram 看原文、留言</a>`:''}</div>`}).join('');
-  $('#evScroll').innerHTML=`<div class="vwrap"><div class="vtrack"><div class="vs"><img src="img/${esc(file)}" alt="${esc(evs[list[0]].title)}"></div></div></div>`+blocks;
+  $('#evScroll').innerHTML=`<div class="vwrap"><div class="vtrack"><div class="vs"><img src="img/${esc(file)}" alt="${esc(evs[list[0]].title)}"></div></div></div>`+blocks+'<div class="evmore"><a class="tolib" href="/party/">看每一場活動的會後感 →</a></div>';
   box.classList.add('on');document.body.classList.add('lock');$('#evScroll').scrollTop=0;$('#evX').focus()};
  const close=()=>{box.classList.remove('on');document.body.classList.remove('lock');last?.focus?.()};
  $('#gal').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.ev==null)return;e.stopPropagation();open(+b.dataset.ev,b.dataset.f)},true);
