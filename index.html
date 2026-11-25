@@ -327,6 +327,12 @@ footer .no{justify-content:center}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:14px 0 0;font-size:13px;color:var(--muted);letter-spacing:.06em}
 .legend .lg-t{letter-spacing:.2em;font-size:11px;opacity:.8}
 .legend b{color:var(--gold);font-weight:400;letter-spacing:1px;margin-right:6px}
+.legend{align-items:center;gap:6px 6px}.legend .lg-t{margin-right:6px}
+.legend .star{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid transparent;border-radius:999px;background:none;color:inherit;font:inherit;font-size:13px;letter-spacing:.06em;cursor:pointer;transition:border-color .2s,background .2s}
+.legend .star:hover{border-color:var(--line)}
+.legend .star[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.legend .star small{opacity:.55;margin-left:5px;font-size:11px}
+.legend .star:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .rlabel{color:var(--muted)}
 
 /* 聚會現場：點照片看會後感 */
@@ -456,7 +462,7 @@ a.rcard{text-decoration:none;color:inherit}
   <p class="no"><b>02</b><i></i>READING NOTES</p>
   <h2>最近讀了什麼</h2>
   <p class="muted">每日紀錄的讀後感都收在這裡，點卡片讀全文。</p>
-  <p class="legend" aria-label="星等說明"><span class="lg-t">我的星等</span><span><b>★</b>不太適合我</span><span><b>★★</b>享受過程</span><span><b>★★★</b>值得一讀</span><span><b>★★★★</b>非常喜歡</span><span><b>★★★★★</b>一生必推</span></p>
+  <div class="legend" role="group" aria-label="依星等篩選"><span class="lg-t">我的星等</span><button type="button" class="star" data-r="1" aria-pressed="false"><b>★</b>不太適合我<small></small></button><button type="button" class="star" data-r="2" aria-pressed="false"><b>★★</b>享受過程<small></small></button><button type="button" class="star" data-r="3" aria-pressed="false"><b>★★★</b>值得一讀<small></small></button><button type="button" class="star" data-r="4" aria-pressed="false"><b>★★★★</b>非常喜歡<small></small></button><button type="button" class="star" data-r="5" aria-pressed="false"><b>★★★★★</b>一生必推<small></small></button></div>
   <div class="tools"><input class="search" id="q" type="search" placeholder="搜尋書名、作者或內容" aria-label="搜尋讀後感"></div>
   <div class="chips" id="chips" role="group" aria-label="分類"></div>
   <p class="count" id="count"></p>
@@ -637,7 +643,7 @@ const CC={'小說':'#7a4e33','推理恐怖':'#3a4246','人文社科':'#2f5a55','
 const reader=$('#reader'),sheet=$('#sheet');
 const tc=t=>{const n=[...t].length;return n>40?'t3':n>24?'t2':n>14?'t1':''};
 const N=()=>matchMedia('(max-width:700px)').matches?5:8;
-let all=[],view=[],shown=N(),cat='全部',q='';
+let all=[],view=[],shown=N(),cat='全部',q='',star=0;
 const RL={1:'不太適合我',2:'享受過程',3:'值得一讀',4:'非常喜歡',5:'一生必推'};
 const rlabel=r=>RL[(String(r).match(/★/g)||[]).length]||'';
 const cut=(s,n)=>s.length>n?s.slice(0,n)+'…':s;
@@ -678,8 +684,8 @@ function setURL(b){
 }
 function render(){
   const k=q.trim().toLowerCase();
-  view=all.filter(b=>(cat==='全部'||b.cat===cat)&&(!k||(b.title+b.author+b.quote+b.note).toLowerCase().includes(k)));
-  $('#count').textContent=`共 ${view.length} 篇`;
+  view=all.filter(b=>(cat==='全部'||b.cat===cat)&&(!star||(String(b.rating).match(/★/g)||[]).length===star)&&(!k||(b.title+b.author+b.quote+b.note).toLowerCase().includes(k)));
+  $('#count').textContent=`共 ${view.length} 篇${star?`・${'★'.repeat(star)} ${RL[star]}（再點一次取消）`:''}`;
   $('#rgrid').innerHTML=view.length?view.slice(0,shown).map((b,i)=>`<a class="rcard${b.cover?' hasc':''}" href="${bk(b)}" data-i="${i}" style="--c:${CC[b.cat]||CC['未分類']}">${b.cover?`<span class="cimg"><img src="${esc(src(b.cover))}" alt="" loading="lazy"></span>`:''}
    <div class="rmeta"><span>${esc(b.date)}</span>${b.day?`<span>${esc(dayLabel(b))}</span>`:''}<span>${esc(b.cat)}</span>${b.rating?`<span class="stars">${esc(b.rating)}</span>`:''}</div>
    <h3 class="${tc(b.title)}">${segT(b.title)}</h3><p class="au">${esc(b.author)}</p>${excerpt(b)?`<q>${esc(excerpt(b))}</q>`:''}</a>`).join(''):'<p class="empty">找不到符合的讀後感，換個關鍵字試試。</p>';
@@ -691,6 +697,9 @@ function chips(){
   $('#chips').innerHTML=cats.map(c=>`<button class="chip" aria-pressed="${c===cat}" data-c="${c}">${c}<small>${c==='全部'?all.length:n[c]}</small></button>`).join('');
 }
 $('#chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;cat=b.dataset.c;shown=N();chips();render()});
+document.querySelector('.legend').addEventListener('click',e=>{const b=e.target.closest('.star');if(!b)return;const r=+b.dataset.r;star=star===r?0:r;
+  document.querySelectorAll('.legend .star').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.r===star));shown=N();render()});
+function starCounts(){const n={};all.forEach(b=>{const r=(String(b.rating).match(/★/g)||[]).length;n[r]=(n[r]||0)+1});document.querySelectorAll('.legend .star').forEach(x=>x.querySelector('small').textContent=n[x.dataset.r]||0)}
 $('#q').addEventListener('input',e=>{q=e.target.value;shown=N();render()});
 $('#moreBtn').addEventListener('click',()=>{shown+=N();render()});
 $('#lessBtn').addEventListener('click',()=>{shown=N();render();jump('#reviews')});
@@ -733,7 +742,7 @@ Promise.all([fetch('reads.json').then(r=>r.json()),cfgP]).then(([d,c])=>{
   all=d.books.map(b=>({...b,cat:b.category||'未分類'}));
   $('#yearCount').textContent=c.yearCount??d.yearCount;$('#reviewCount').textContent=c.reviewCount??all.filter(b=>b.note).length;
   if(c.eventCount)$('#eventCount').textContent=c.eventCount;if(c.podcastCount)$('#podCount').textContent=c.podcastCount;
-  chips();render();
+  chips();starCounts();render();
 }).catch(()=>{$('#rgrid').innerHTML='<p class="empty">讀後感暫時載入不了，請稍後再試。</p>'});
 }
 </script>
