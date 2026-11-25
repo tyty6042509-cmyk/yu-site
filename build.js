@@ -484,7 +484,7 @@ ${paras(e.text)}
   const idx = head({
     title: `書蟲派對活動紀錄：${places.join('、')}讀書會｜${BRAND}`,
     desc: `閱讀社群《書蟲派對》在${places.join('、')}舉辦的 ${evs.length} 場實體讀書會紀錄與會後感。`,
-    url: '/party/', image: SITE + '/img/og.jpg', type: 'website',
+    url: '/party/', image: SITE + (fs.existsSync(path.join(ROOT, 'img', 'party-og.jpg')) ? '/img/party-og.jpg' : '/img/og.jpg'), type: 'website',
   }) + `
 <main class="wide">
   <p class="crumb"><a href="/">Yu聿</a> ／ 書蟲派對活動紀錄</p>
