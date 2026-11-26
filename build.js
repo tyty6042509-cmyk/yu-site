@@ -45,6 +45,16 @@ const tc = t => { const n = [...t].length; return n > 40 ? 't3' : n > 24 ? 't2' 
 const segs = t => String(t).split(/(?<=[:：—;；,，!！?？]\s*)(?=[^:：—;；,，!！?？\s])|(?=[（(《〈])(?!^)/).filter(Boolean).map(x => `<span class="seg">${esc(x.trimEnd())}</span>${/\s$/.test(x) ? ' ' : ''}`).join('');
 const paras = s => String(s || '').split(/\n+/).map(x => x.trim()).filter(Boolean).map(p => `<p>${esc(p)}</p>`).join('\n');
 
+
+/* ---------- 作家專題 ---------- */
+const MIN_AUTHOR = 3;   // 讀過幾本以上的作者才產生專題頁（想多做幾位可改成 2）
+const splitAuthors = s => String(s || '').split(/[、,，／\/]/)
+  .map(x => x.replace(/\s*(著|繪|譯|編)$/, '').replace(/[•．・]/g, '·').replace(/\s+/g, ' ').trim())
+  .filter(x => x.length >= 2 && !/translated/i.test(x));
+// 網址用作者名算出固定的短代碼（中文網址分享時會變成一長串亂碼，所以不用中文）
+const fnv = str => { let h = 0x811c9dc5; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); };
+const authorUrl = name => `/author/a${fnv(name)}/`;
+
 /* ---------- shared look (取自首頁 V2 風格) ---------- */
 const CSS = `
 :root{color-scheme:light dark;--bg:light-dark(#eeece8,#16171a);--ink:light-dark(#1f2125,#e9e7e3);--muted:light-dark(#7b7b7b,#a2a19d);--card:light-dark(#f8f7f4,#1f2024);--line:light-dark(#dcd9d3,#2c2d31);--gold:#b59a6a}
@@ -138,6 +148,23 @@ footer a{text-decoration:none;border-bottom:1px solid var(--line);margin:0 8px}
 .evlist b{display:block;font-family:"Noto Serif TC",serif;font-weight:500;font-size:16px;line-height:1.4;margin:2px 0}
 .evlist small{display:block;color:var(--muted);font-size:12px;line-height:1.6}
 
+.aulink{margin:6px 0 0;font-size:13px;letter-spacing:.06em}.aulink a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:1px}.aulink a:hover{color:var(--ink);border-color:var(--ink)}
+.apick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:18px 0 0}
+.apick .flabel{font-size:12px;letter-spacing:.2em;color:var(--muted);margin-right:4px}
+.apick a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);text-decoration:none;font-size:14px}
+.apick a:hover{border-color:var(--ink)}.apick small{color:var(--muted);font-size:11px;margin-left:6px}
+.apick.big a{min-height:48px;padding:0 20px;font-size:16px;font-family:"Noto Serif TC",serif}
+.arank{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:12px}
+.arank a{display:grid;grid-template-columns:34px 76px minmax(0,1fr);gap:16px;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:4px;background:var(--card);text-decoration:none;transition:transform .3s,border-color .3s}
+.arank a:hover{transform:translateY(-2px);border-color:var(--ink)}
+.arank a:focus-visible,.apick a:focus-visible,.aulink a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.anum{font:400 22px/1 "Noto Serif TC",serif;color:var(--gold);text-align:center}
+.arank img{width:76px;aspect-ratio:3/4;object-fit:cover;border-radius:2px;background:var(--line)}
+.abody{display:grid;gap:5px}
+.abody b{font-family:"Noto Serif TC",serif;font-weight:500;font-size:18px;line-height:1.4}
+.abody q{font-family:"Noto Serif TC",serif;font-size:14px;line-height:1.7;color:var(--muted);quotes:"「" "」"}
+.abody .go{font-size:13px;letter-spacing:.1em;color:var(--ink)}
+@media(max-width:600px){.arank a{grid-template-columns:24px 60px minmax(0,1fr);gap:12px;padding:12px}.arank img{width:60px}.anum{font-size:17px}.abody b{font-size:16px}}
 /* 書庫：搜尋＋浮動目錄 */
 .sbox{margin:24px 0 0}
 .search{width:100%;min-height:48px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:16px}
@@ -237,6 +264,11 @@ function main() {
 
   // 2. 每本書一頁
   const withNote = books.filter(b => flat(b.note));
+  const byAuthor = {};
+  withNote.forEach(b => splitAuthors(b.author).forEach(a => (byAuthor[a] = byAuthor[a] || []).push(b)));
+  const authors = Object.keys(byAuthor).filter(a => byAuthor[a].length >= MIN_AUTHOR)
+    .sort((a, b) => byAuthor[b].length - byAuthor[a].length || a.localeCompare(b, 'zh-Hant'));
+  const authorSet = new Set(authors);
   withNote.forEach((b, i) => {
     const n = stars(b.rating);
     const url = bookUrl(b);
@@ -285,6 +317,7 @@ function main() {
     ${b.cover ? `<div class="bigc"><img src="${esc(rel(b.cover))}" alt="《${esc(b.title)}》完讀圖卡"></div>` : ''}
     <h1 class="${tc(b.title)}">${segs(`《${b.title}》`)}<span class="seg">讀後感</span></h1>
     ${b.author ? `<p class="au">${esc(b.author)}</p>` : ''}
+    ${splitAuthors(b.author).filter(a => authorSet.has(a)).map(a => `<p class="aulink"><a href="${authorUrl(a)}">${esc(a)}作品讀後感（${byAuthor[a].length} 篇）→</a></p>`).join('')}
     ${flat(b.quote) ? `<blockquote>${esc(b.quote)}</blockquote>` : '<div style="height:20px"></div>'}
     <div class="txt">
 ${paras(b.note)}
@@ -343,6 +376,7 @@ yuShare(document.querySelector('.shwrap'));
   <p class="crumb"><a href="/">Yu聿</a> ／ 讀後感書庫</p>
   <h1>讀後感書庫</h1>
   <p class="lede">每日紀錄的 ${withNote.length} 篇讀後感，依類別整理。點書名讀全文。</p>
+  ${authors.length ? `<div class="apick"><span class="flabel">作家專題</span>${authors.map(a => `<a href="${authorUrl(a)}">${esc(a)}<small>${byAuthor[a].length}</small></a>`).join('')}</div>` : ''}
   <div class="sbox"><input class="search" id="q" type="search" placeholder="搜尋書名、作者或句子" aria-label="搜尋讀後感" autocomplete="off"><p class="count" id="count" aria-live="polite"></p></div>
   <div class="cats">${order.map(c => `<a href="#${encodeURIComponent(c)}">${esc(c)}<small>${cats[c].length}</small></a>`).join('')}</div>
   ${order.map(c => `<section class="cat" id="${esc(c)}"><h2>${esc(c)} <small class="n">${cats[c].length}</small></h2><div class="list">${cats[c].map(b => `<a href="${bookUrl(b)}" data-k="${esc([b.title, b.author, b.category, flat(b.quote)].join(' ').toLowerCase())}">${b.cover ? `<img src="${esc(rel(b.cover))}" alt="" loading="lazy">` : '<span></span>'}<span><b>${esc(b.title)}</b><small>${esc(b.author)}</small><small>${esc(b.date)}${stars(b.rating) ? `・<span class="stars">${'★'.repeat(stars(b.rating))}</span>` : ''}</small></span></a>`).join('')}</div></section>`).join('\n')}
@@ -388,6 +422,9 @@ top.addEventListener('click',()=>scrollTo({top:0,behavior:rm}));
 </script>` + foot();
   fs.writeFileSync(path.join(OUT, 'book', 'index.html'), idx);
 
+  // 3a. 作家專題頁
+  const authorUrls = buildAuthors(authors, byAuthor);
+
   // 3b. 書蟲派對活動紀錄
   const evUrls = buildEvents();
 
@@ -398,6 +435,7 @@ top.addEventListener('click',()=>scrollTo({top:0,behavior:rm}));
     { loc: SITE + '/book/', lastmod: newest },
     ...withNote.map(b => ({ loc: SITE + bookUrl(b), lastmod: b.date })),
     ...evUrls,
+    ...authorUrls,
   ];
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -408,6 +446,73 @@ top.addEventListener('click',()=>scrollTo({top:0,behavior:rm}));
   }
 
   console.log(`✔ 產生 ${withNote.length} 篇讀後感頁面、${evUrls.length ? evUrls.length - 1 : 0} 篇活動紀錄、書庫總表、sitemap.xml（共 ${urls.length} 個網址）`);
+}
+
+
+/* ---------- 作家專題：/author/<代碼>/ ---------- */
+function buildAuthors(authors, byAuthor) {
+  if (!authors.length) return [];
+  const rank = list => [...list].sort((a, b) => stars(b.rating) - stars(a.rating) || String(b.date).localeCompare(String(a.date)));
+  const urls = [];
+  authors.forEach(name => {
+    const list = rank(byAuthor[name]);
+    const n = list.length, url = authorUrl(name);
+    const titles = list.slice(0, 4).map(b => `《${b.title}》`).join('');
+    const rated = list.filter(b => stars(b.rating));
+    const top = rated.length ? stars(rated[0].rating) : 0;
+    const best = top ? list.filter(b => stars(b.rating) === top) : [];
+    const title = `${name}作品推薦｜${n} 篇讀後感與心得｜${BRAND}`;
+    const desc = cut(`Yu聿 讀過的${name}作品共 ${n} 本：${titles}${n > 4 ? '等' : ''}。依星等由高到低排列，附每本的讀後感與心得。`, 120);
+    const image = list.find(b => b.cover) ? abs(list.find(b => b.cover).cover) : SITE + '/img/og.jpg';
+    const schema = {
+      '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${name}作品讀後感`, url: SITE + url, inLanguage: 'zh-Hant',
+      about: { '@type': 'Person', name },
+      author: { '@type': 'Person', name: BRAND, url: SITE + '/' },
+      mainEntity: { '@type': 'ItemList', numberOfItems: n, itemListElement: list.map((b, i) => ({ '@type': 'ListItem', position: i + 1, url: SITE + bookUrl(b), name: `《${b.title}》讀後感` })) },
+    };
+    const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Yu聿', item: SITE + '/' },
+      { '@type': 'ListItem', position: 2, name: '讀後感書庫', item: SITE + '/book/' },
+      { '@type': 'ListItem', position: 3, name: `${name}作品讀後感`, item: SITE + url },
+    ] };
+    const others = authors.filter(a => a !== name);
+    const html = head({ title, desc, url, image, type: 'website', extra: `<script type="application/ld+json">${ld(schema)}</script>\n<script type="application/ld+json">${ld(crumbs)}</script>` }) + `
+<main>
+  <p class="crumb"><a href="/">Yu聿</a> ／ <a href="/book/">讀後感書庫</a> ／ 作家專題</p>
+  <p class="no"><i></i>AUTHOR</p>
+  <h1><span class="seg">${esc(name)}</span><span class="seg">作品讀後感</span></h1>
+  <p class="lede">Yu聿 讀過的${esc(name)}作品共 ${n} 本，依星等由高到低排列${best.length && best.length <= 2 ? `；最推薦的是${best.map(b => `《${esc(b.title)}》`).join('')}（${'★'.repeat(top)} ${RL[top]}）` : best.length ? `；其中 ${best.length} 本是${'★'.repeat(top)} ${RL[top]}` : ''}。</p>
+  <ol class="arank">
+    ${list.map((b, i) => `<li><a href="${bookUrl(b)}">
+      <span class="anum">${String(i + 1).padStart(2, '0')}</span>
+      ${b.cover ? `<img src="${esc(rel(b.cover))}" alt="《${esc(b.title)}》" loading="lazy">` : '<span></span>'}
+      <span class="abody">
+        <span class="rmeta">${stars(b.rating) ? `<span class="stars">${'★'.repeat(stars(b.rating))}${'☆'.repeat(5 - stars(b.rating))}</span><span>${RL[stars(b.rating)]}</span>` : ''}<span>${esc(b.category)}</span><span>${esc(b.date)}</span></span>
+        <b>《${esc(b.title)}》</b>
+        ${flat(b.quote || b.note) ? `<q>${esc(cut(flat(b.quote) || flat(b.note), 70))}</q>` : ''}
+        <span class="go">讀全文 →</span>
+      </span></a></li>`).join('\n')}
+  </ol>
+  ${others.length ? `<section class="sec"><p class="no"><i></i>MORE AUTHORS</p><h2>其他作家專題</h2><div class="apick">${others.map(a => `<a href="${authorUrl(a)}">${esc(a)}<small>${byAuthor[a].length}</small></a>`).join('')}</div></section>` : ''}
+  ${cta()}
+</main>` + foot();
+    const dir = path.join(OUT, 'author', 'a' + fnv(name));
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'index.html'), html);
+    urls.push({ loc: SITE + url, lastmod: list.map(b => b.date).filter(Boolean).sort().pop() });
+  });
+  // /author/ 總覽
+  const idx = head({ title: `作家專題：${authors.join('、')}｜${BRAND}`, desc: `Yu聿 讀過三本以上的作家，依作家整理的讀後感與作品推薦：${authors.join('、')}。`, url: '/author/', image: SITE + '/img/og.jpg', type: 'website' }) + `
+<main>
+  <p class="crumb"><a href="/">Yu聿</a> ／ <a href="/book/">讀後感書庫</a> ／ 作家專題</p>
+  <h1>作家專題</h1>
+  <p class="lede">讀過 ${MIN_AUTHOR} 本以上的作家，把他們的作品整理在一起，依星等由高到低排列。</p>
+  <div class="apick big">${authors.map(a => `<a href="${authorUrl(a)}">${esc(a)}<small>${byAuthor[a].length} 篇</small></a>`).join('')}</div>
+  ${cta()}
+</main>` + foot();
+  fs.writeFileSync(path.join(OUT, 'author', 'index.html'), idx);
+  urls.unshift({ loc: SITE + '/author/', lastmod: urls.map(u => u.lastmod).filter(Boolean).sort().pop() });
+  return urls;
 }
 
 /* ---------- 書蟲派對活動紀錄：/party/<日期>/ ---------- */

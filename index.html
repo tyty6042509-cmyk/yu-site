@@ -452,6 +452,7 @@ a.rcard{text-decoration:none;color:inherit}
 .tolib:focus-visible,.shbtn:focus-visible,.shpop button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @media(max-width:600px){.pager{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pager .mid{grid-column:1/-1;order:-1;justify-content:center}}
 .sheet h2.flow .seg{display:inline}.sheet h2.flow{text-wrap:balance}
+.sheet .aulink{margin:6px 0 0;font-size:13px;letter-spacing:.06em}.sheet .aulink a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:1px}.sheet .aulink a:hover{color:var(--ink);border-color:var(--ink)}
 .alllink{text-align:center;margin:18px 0 0;font-size:14px;letter-spacing:.12em}
 .alllink a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
 .alllink a:hover{color:var(--ink)}
@@ -735,6 +736,12 @@ function yuShare(w){if(!w)return;var enc=encodeURIComponent,btn=w.querySelector(
    if(navigator.clipboard)navigator.clipboard.writeText(u).then(done).catch(function(){window.prompt('複製這個連結',u)});else window.prompt('複製這個連結',u);return}
   var m={threads:'https://www.threads.net/intent/post?text='+enc(t+' '+u),line:'https://social-plugins.line.me/lineit/share?url='+enc(u),fb:'https://www.facebook.com/sharer/sharer.php?u='+enc(u)};
   if(m[k]){set(false);window.open(m[k],'_blank','noopener')}});}
+/* 作家專題（與 build.js 相同的規則） */
+const splitAuthors=s=>String(s||'').split(/[、,，／\/]/).map(x=>x.replace(/\s*(著|繪|譯|編)$/,'').replace(/[•．・]/g,'·').replace(/\s+/g,' ').trim()).filter(x=>x.length>=2&&!/translated/i.test(x));
+const fnv=str=>{let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)};
+const authorUrl=n=>`/author/a${fnv(n)}/`;
+const authorCount=list=>{const c={};list.filter(b=>String(b.note||'').trim()).forEach(b=>splitAuthors(b.author).forEach(a=>c[a]=(c[a]||0)+1));return c};
+let AC={};
 const homeTitle=document.title;let pushed=false;
 function setURL(b){
   const u=bk(b);document.title=`《${b.title}》讀後感｜Yu聿`;
@@ -776,7 +783,7 @@ function openR(i){
   sheet.style.setProperty('--c',CC[b.cat]||CC['未分類']);
   sheet.innerHTML=`<button class="x" id="rClose" aria-label="關閉">×</button>
    <div class="rmeta"><span>${esc(b.date)}</span>${b.day?`<span>${esc(dayLabel(b))}</span>`:''}<span>${esc(b.cat)}</span>${b.rating?`<span class="stars">${esc(b.rating)}</span><span class="rlabel">${esc(rlabel(b.rating))}</span>`:''}</div>
-   ${b.cover?`<div class="bigc"><img src="${esc(src(b.cover))}" alt="《${esc(b.title)}》完讀圖卡"></div>`:''}<h2 id="rTitle" class="${tc(b.title)}">${segT(b.title)}</h2><p class="au">${esc(b.author)}</p>
+   ${b.cover?`<div class="bigc"><img src="${esc(src(b.cover))}" alt="《${esc(b.title)}》完讀圖卡"></div>`:''}<h2 id="rTitle" class="${tc(b.title)}">${segT(b.title)}</h2><p class="au">${esc(b.author)}</p>${splitAuthors(b.author).filter(a=>(AC[a]||0)>=3).map(a=>`<p class="aulink"><a href="${authorUrl(a)}">${esc(a)}作品讀後感（${AC[a]} 篇）→</a></p>`).join('')}
    ${b.quote?`<blockquote>${esc(b.quote)}</blockquote>`:'<div style="height:20px"></div>'}
    <div class="txt">${paras}</div>
    <div class="shrow"><div class="shwrap" data-url="https://yu-reading.com${bk(b)}" data-title="《${esc(b.title)}》讀後感｜Yu聿"><button type="button" class="shbtn" aria-label="分享這篇" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6"/><path d="M9 15c.5-5 4.5-8 11-8"/><path d="M16 3l4 4-4 4"/></svg></button><div class="shpop" role="menu" hidden><p class="sl">分享這篇</p><button type="button" data-sh="native" hidden>更多分享方式…</button><button type="button" data-sh="threads">Threads</button><button type="button" data-sh="line">LINE</button><button type="button" data-sh="fb">Facebook</button><button type="button" data-sh="copy">複製連結</button></div></div></div>
@@ -804,7 +811,7 @@ Promise.all([fetch('reads.json').then(r=>r.json()),cfgP]).then(([d,c])=>{
   all=d.books.map(b=>({...b,cat:b.category||'未分類'}));
   $('#yearCount').textContent=c.yearCount??d.yearCount;$('#reviewCount').textContent=c.reviewCount??all.filter(b=>b.note).length;
   if(c.eventCount)$('#eventCount').textContent=c.eventCount;if(c.podcastCount)$('#podCount').textContent=c.podcastCount;
-  chips();starCounts();render();
+  AC=authorCount(all);chips();starCounts();render();
 }).catch(()=>{$('#rgrid').innerHTML='<p class="empty">讀後感暫時載入不了，請稍後再試。</p>'});
 }
 </script>
@@ -862,6 +869,11 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const flat=s=>String(s||'').replace(/\s+/g,' ').trim();
 const gs=$('#gs'),inp=$('#gsQ'),body=$('#gsBody');
+const splitAuthors=s=>String(s||'').split(/[、,，／\/]/).map(x=>x.replace(/\s*(著|繪|譯|編)$/,'').replace(/[•．・]/g,'·').replace(/\s+/g,' ').trim()).filter(x=>x.length>=2&&!/translated/i.test(x));
+const fnv=str=>{let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)};
+const authorUrl=n=>`/author/a${fnv(n)}/`;
+const authorCount=list=>{const c={};list.filter(b=>String(b.note||'').trim()).forEach(b=>splitAuthors(b.author).forEach(a=>c[a]=(c[a]||0)+1));return c};
+let AUTH=[];
 let books=[],events=[],ready=false,last=null;
 const SECTIONS=[
  {t:'關於 Yu聿',d:'獨立內容創作者、《書蟲派對》主辦人、《尼采一下》主持人',k:'關於 介紹 yu聿 主辦人 創作者',h:'#about'},
@@ -876,18 +888,21 @@ const load=()=>ready?Promise.resolve():Promise.all([
   books=(r.books||[]).filter(b=>b&&b.id&&b.title);
   const seen={};
   events=(e.events||[]).filter(x=>x&&x.title&&flat(x.text)).map(x=>{const d=String(x.date||'').trim().replace(/[./]/g,'-');let slug=/^\d{4}-\d{2}-\d{2}$/.test(d)?d:'event';seen[slug]=(seen[slug]||0)+1;if(seen[slug]>1)slug+='-'+seen[slug];return {...x,url:'/party/'+slug+'/'}});
+  const c=authorCount(books);AUTH=Object.keys(c).filter(a=>c[a]>=3).map(a=>({n:a,c:c[a]}));
   ready=true;});
 const hl=(text,k)=>{const t=String(text||'');if(!k)return esc(t);const i=t.toLowerCase().indexOf(k);if(i<0)return esc(t);return esc(t.slice(0,i))+'<mark>'+esc(t.slice(i,i+k.length))+'</mark>'+esc(t.slice(i+k.length))};
 const snip=(text,k)=>{const t=flat(text);const i=t.toLowerCase().indexOf(k);if(i<0)return '';const a=Math.max(0,i-18);return (a?'…':'')+hl(t.slice(a,i+k.length+36),k)+'…'};
 const src=p=>!p||/^(https?:|\/)/.test(p)?p:'/'+p;
 function draw(){
   const k=inp.value.trim().toLowerCase();
-  if(!k){body.innerHTML='<div class="gsg"><h4>快速前往</h4><div class="gsquick"><a href="/book/">讀後感書庫</a><a href="/party/">活動紀錄</a><a href="#lists" data-h>主題書單</a><a href="#podcast" data-h>尼采一下</a><a href="#party" data-h>加入書蟲派對</a></div></div><p class="gsempty">輸入書名、作者、地點或任何關鍵字</p>';return}
+  if(!k){body.innerHTML='<div class="gsg"><h4>快速前往</h4><div class="gsquick"><a href="/book/">讀後感書庫</a><a href="/party/">活動紀錄</a><a href="/author/">作家專題</a><a href="#lists" data-h>主題書單</a><a href="#podcast" data-h>尼采一下</a><a href="#party" data-h>加入書蟲派對</a></div></div><p class="gsempty">輸入書名、作者、地點或任何關鍵字</p>';return}
   const score=b=>{const T=b.title.toLowerCase(),A=String(b.author).toLowerCase();return T.includes(k)?3:A.includes(k)?2:(String(b.category)+b.quote).toLowerCase().includes(k)?1:String(b.note).toLowerCase().includes(k)?0.5:0};
   const R=books.map(b=>[score(b),b]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
   const E=events.filter(e=>(e.title+' '+e.place+' '+e.date+' '+e.text).toLowerCase().includes(k));
+  const AU=AUTH.filter(a=>a.n.toLowerCase().includes(k));
   const S=SECTIONS.filter(x=>(x.t+' '+x.d+' '+x.k).toLowerCase().includes(k));
   let h='';
+  if(AU.length)h+=`<div class="gsg"><h4>作家專題</h4>${AU.map(a=>`<a class="gsr noimg" href="${authorUrl(a.n)}"><span><b>${hl(a.n,k)}作品讀後感</b><small>${a.c} 篇・依星等排列</small></span></a>`).join('')}</div>`;
   if(R.length)h+=`<div class="gsg"><h4>讀後感・${R.length} 篇</h4>${R.slice(0,8).map(b=>{const sub=b.title.toLowerCase().includes(k)||String(b.author).toLowerCase().includes(k)?esc([b.date,b.category,(String(b.rating).match(/★/g)||[]).join('')].filter(Boolean).join('・')):snip(b.quote+' '+b.note,k);
     return `<a class="gsr" href="/book/${encodeURIComponent(b.id)}/">${b.cover?`<img src="${esc(src(b.cover))}" alt="" loading="lazy">`:'<span></span>'}<span><b>${hl(b.title,k)}</b><small>${hl(b.author,k)}</small><small>${sub}</small></span></a>`}).join('')}${R.length>8?`<button type="button" class="gsall" data-all>在讀後感區看全部 ${R.length} 篇 →</button>`:''}</div>`;
   if(E.length)h+=`<div class="gsg"><h4>活動紀錄・${E.length} 場</h4>${E.slice(0,6).map(e=>`<a class="gsr" href="${e.url}">${(e.photos||[])[0]?`<img src="/img/${esc(e.photos[0])}" alt="" loading="lazy">`:'<span></span>'}<span><b>${hl(e.title,k)}</b><small>${esc([e.date,e.place].filter(Boolean).join('・'))}</small><small>${snip(e.text,k)}</small></span></a>`).join('')}</div>`;
