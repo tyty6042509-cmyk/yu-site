@@ -390,6 +390,54 @@ a.rcard{text-decoration:none;color:inherit}
 .pager .shpop button{max-width:none;border:0;border-radius:6px;padding:0 10px;min-height:40px;white-space:nowrap}
 .tolib{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:999px;background:var(--ink);color:var(--bg);text-decoration:none;font-size:13px;letter-spacing:.14em;white-space:nowrap}
 .tolib:hover{filter:brightness(1.15)}
+.sbtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid var(--ink);border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:13px;letter-spacing:.12em;cursor:pointer}
+.sbtn svg,.gshead svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;flex:none}
+.sbtn:hover{background:var(--ink);color:var(--bg)}
+@media(max-width:600px){.sbtn{width:44px;padding:0;justify-content:center}.sbtn span{display:none}}
+.sbtn:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.gs{position:fixed;inset:0;z-index:70;display:flex;justify-content:center;align-items:flex-start;padding:8vh 16px 16px;background:rgba(15,10,8,.55);backdrop-filter:blur(3px)}
+.gs[hidden]{display:none}
+.gsbox{width:min(100%,680px);max-height:84vh;display:flex;flex-direction:column;background:var(--bg);border-radius:10px;overflow:hidden;box-shadow:0 30px 60px -20px rgba(0,0,0,.55);animation:rise .3s cubic-bezier(.2,.8,.2,1)}
+.gshead{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 20px;border-bottom:1px solid var(--line);color:var(--muted)}
+.gshead input{flex:1;min-height:52px;border:0;background:none;color:var(--ink);font:inherit;font-size:17px;outline:none}
+.gshead input::-webkit-search-cancel-button{display:none}
+.gsbody{overflow-y:auto;padding:10px 10px 18px}
+.gsg{margin-top:12px}.gsg h4{margin:0 10px 6px;font:400 11px/1.6 "Noto Sans TC",sans-serif;letter-spacing:.24em;color:var(--muted)}
+.gsr{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:center;padding:9px 10px;border-radius:6px;text-decoration:none;color:inherit}
+.gsr.noimg{grid-template-columns:minmax(0,1fr)}
+.gsr:hover,.gsr:focus-visible,.gsr.on{background:var(--card);outline:none}
+.gsr img{width:40px;aspect-ratio:3/4;object-fit:cover;border-radius:2px;background:var(--line)}
+.gsr b{display:block;font-family:"Noto Serif TC",serif;font-weight:500;font-size:15px;line-height:1.45}
+.gsr small{display:block;color:var(--muted);font-size:12px;line-height:1.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gsr mark{background:color-mix(in srgb,var(--gold) 35%,transparent);color:inherit;border-radius:2px}
+.gsall{display:block;margin:4px 10px 0;padding:8px 0;border:0;background:none;color:var(--ink);font:inherit;font-size:13px;letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:left}
+.gsempty{padding:28px 10px;text-align:center;color:var(--muted)}
+.gsquick{display:flex;flex-wrap:wrap;gap:8px;padding:4px 10px}
+.gsquick a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:13px}
+.gsquick a:hover{border-color:var(--ink)}
+@media(max-width:600px){.gs{padding:0}.gsbox{max-height:100vh;height:100%;border-radius:0}}
+
+.filters{margin:28px 0 6px;padding:clamp(16px,3vw,24px);border:1px solid var(--line);border-radius:6px;background:var(--card);display:grid;gap:14px}
+.fsearch{position:relative;display:block}
+.fsearch svg{position:absolute;left:18px;top:50%;translate:0 -50%;width:19px;height:19px;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round;pointer-events:none}
+.filters .search{width:100%;min-height:52px;padding:0 18px 0 48px;border:1px solid var(--ink);background:var(--bg);font-size:16px}
+.frow{display:grid;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:10px}
+.flabel{font-size:12px;letter-spacing:.2em;color:var(--muted)}
+.filters .chips{padding:2px 0}
+.filters .chip,.legend .star{flex:none;display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font:inherit;font-size:13px;letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:border-color .2s,background .2s}
+.filters .chip:hover,.legend .star:hover{border-color:var(--ink)}
+.filters .chip[aria-pressed=true],.legend .star[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.legend .star b{color:var(--gold);font-weight:400;letter-spacing:1px;margin-right:6px}
+.legend .star small,.filters .chip small{opacity:.55;margin-left:5px;font-size:11px}
+.filters .chip:focus-visible,.legend .star:focus-visible,.fclear:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.filters .legend{margin:0;gap:8px;color:inherit;font-size:13px}
+.filters .chips{flex-wrap:wrap;overflow:visible}
+@media(max-width:600px){#chips{flex-wrap:nowrap;overflow-x:auto;mask-image:linear-gradient(90deg,#000 88%,transparent)}}
+.fstat{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:24px}
+.fstat .count{margin:0}
+.fclear{border:0;background:none;color:var(--ink);font:inherit;font-size:13px;letter-spacing:.06em;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px 0}
+@media(max-width:600px){.frow{grid-template-columns:1fr;gap:6px}}
+
 .evmore{display:flex;justify-content:center;padding:4px 20px 30px}
 .lb .lbto{background:#e9e7e3;color:#1c1e23;margin-top:4px}
 .shwrap{position:relative}
@@ -416,6 +464,7 @@ a.rcard{text-decoration:none;color:inherit}
   <div class="links">
     <a href="#about">關於我</a><a href="#reviews">讀後感</a><a href="#party">書蟲派對</a><a href="#lists">書單</a><a href="#podcast">尼采一下</a>
   </div>
+  <button class="sbtn" id="gsNav" type="button" aria-label="搜尋全站"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>搜尋</span></button>
   <button class="menubtn" id="menuBtn" aria-expanded="false" aria-controls="drawer"><span><i></i><i></i><i></i></span>目錄</button>
 </div></nav>
 
@@ -464,10 +513,12 @@ a.rcard{text-decoration:none;color:inherit}
   <p class="no"><b>02</b><i></i>READING NOTES</p>
   <h2>最近讀了什麼</h2>
   <p class="muted">每日紀錄的讀後感都收在這裡，點卡片讀全文。</p>
-  <div class="legend" role="group" aria-label="依星等篩選"><span class="lg-t">我的星等</span><button type="button" class="star" data-r="1" aria-pressed="false"><b>★</b>不太適合我<small></small></button><button type="button" class="star" data-r="2" aria-pressed="false"><b>★★</b>享受過程<small></small></button><button type="button" class="star" data-r="3" aria-pressed="false"><b>★★★</b>值得一讀<small></small></button><button type="button" class="star" data-r="4" aria-pressed="false"><b>★★★★</b>非常喜歡<small></small></button><button type="button" class="star" data-r="5" aria-pressed="false"><b>★★★★★</b>一生必推<small></small></button></div>
-  <div class="tools"><input class="search" id="q" type="search" placeholder="搜尋書名、作者或內容" aria-label="搜尋讀後感"></div>
-  <div class="chips" id="chips" role="group" aria-label="分類"></div>
-  <p class="count" id="count"></p>
+  <div class="filters" role="search" aria-label="搜尋與篩選讀後感">
+    <label class="fsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="search" id="q" type="search" placeholder="搜尋書名、作者或內容" aria-label="搜尋讀後感" autocomplete="off"></label>
+    <div class="frow"><span class="flabel">類別</span><div class="chips" id="chips" role="group" aria-label="依類別篩選"></div></div>
+    <div class="frow"><span class="flabel">星等</span><div class="chips legend" role="group" aria-label="依星等篩選"><button type="button" class="star" data-r="0" aria-pressed="true">全部<small></small></button><button type="button" class="star" data-r="1" aria-pressed="false"><b>★</b>不太適合我<small></small></button><button type="button" class="star" data-r="2" aria-pressed="false"><b>★★</b>享受過程<small></small></button><button type="button" class="star" data-r="3" aria-pressed="false"><b>★★★</b>值得一讀<small></small></button><button type="button" class="star" data-r="4" aria-pressed="false"><b>★★★★</b>非常喜歡<small></small></button><button type="button" class="star" data-r="5" aria-pressed="false"><b>★★★★★</b>一生必推<small></small></button></div></div>
+    <div class="fstat"><p class="count" id="count"></p><button type="button" class="fclear" id="fclear" hidden>清除篩選 ×</button></div>
+  </div>
   <div class="rgrid" id="rgrid"></div>
   <div class="more btns"><button class="btn ghost" id="moreBtn" hidden>再看 10 本</button><button class="btn ghost" id="lessBtn" hidden>收合</button></div>
   <p class="alllink"><a href="/book/">依類別瀏覽全部讀後感 →</a></p>
@@ -556,6 +607,12 @@ a.rcard{text-decoration:none;color:inherit}
 <button class="totop" id="toTop" aria-label="回到頂端"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <a class="mailfab" href="mailto:tyty6042509@gmail.com" aria-label="寄信給 Yu聿" title="寄信給我"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
 
+<div class="gs" id="gs" role="dialog" aria-modal="true" aria-label="全站搜尋" hidden>
+  <div class="gsbox">
+    <div class="gshead"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="gsQ" type="search" placeholder="搜尋讀後感、作者、活動紀錄、書單…" autocomplete="off" aria-label="搜尋全站"><button class="x" id="gsX" type="button" aria-label="關閉搜尋">×</button></div>
+    <div class="gsbody" id="gsBody"></div>
+  </div>
+</div>
 <div class="reader" id="reader" role="dialog" aria-modal="true" aria-labelledby="rTitle">
   <article class="sheet" id="sheet"></article>
 </div>
@@ -687,7 +744,7 @@ function setURL(b){
 function render(){
   const k=q.trim().toLowerCase();
   view=all.filter(b=>(cat==='全部'||b.cat===cat)&&(!star||(String(b.rating).match(/★/g)||[]).length===star)&&(!k||(b.title+b.author+b.quote+b.note).toLowerCase().includes(k)));
-  $('#count').textContent=`共 ${view.length} 篇${star?`・${'★'.repeat(star)} ${RL[star]}（再點一次取消）`:''}`;
+  $('#count').textContent=`共 ${view.length} 篇${(q.trim()||cat!=='全部'||star)?'符合條件':''}`;$('#fclear').hidden=!(q.trim()||cat!=='全部'||star);
   $('#rgrid').innerHTML=view.length?view.slice(0,shown).map((b,i)=>`<a class="rcard${b.cover?' hasc':''}" href="${bk(b)}" data-i="${i}" style="--c:${CC[b.cat]||CC['未分類']}">${b.cover?`<span class="cimg"><img src="${esc(src(b.cover))}" alt="" loading="lazy"></span>`:''}
    <div class="rmeta"><span>${esc(b.date)}</span>${b.day?`<span>${esc(dayLabel(b))}</span>`:''}<span>${esc(b.cat)}</span>${b.rating?`<span class="stars">${esc(b.rating)}</span>`:''}</div>
    <h3 class="${tc(b.title)}">${segT(b.title)}</h3><p class="au">${esc(b.author)}</p>${excerpt(b)?`<q>${esc(excerpt(b))}</q>`:''}</a>`).join(''):'<p class="empty">找不到符合的讀後感，換個關鍵字試試。</p>';
@@ -699,9 +756,12 @@ function chips(){
   $('#chips').innerHTML=cats.map(c=>`<button class="chip" aria-pressed="${c===cat}" data-c="${c}">${c}<small>${c==='全部'?all.length:n[c]}</small></button>`).join('');
 }
 $('#chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;cat=b.dataset.c;shown=N();chips();render()});
-document.querySelector('.legend').addEventListener('click',e=>{const b=e.target.closest('.star');if(!b)return;const r=+b.dataset.r;star=star===r?0:r;
-  document.querySelectorAll('.legend .star').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.r===star));shown=N();render()});
-function starCounts(){const n={};all.forEach(b=>{const r=(String(b.rating).match(/★/g)||[]).length;n[r]=(n[r]||0)+1});document.querySelectorAll('.legend .star').forEach(x=>x.querySelector('small').textContent=n[x.dataset.r]||0)}
+const syncStars=()=>document.querySelectorAll('.legend .star').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.r===star));
+document.querySelector('.legend').addEventListener('click',e=>{const b=e.target.closest('.star');if(!b)return;const r=+b.dataset.r;star=(r&&star===r)?0:r;syncStars();shown=N();render()});
+$('#fclear').addEventListener('click',()=>{q='';$('#q').value='';cat='全部';star=0;syncStars();chips();shown=N();render()});
+/* 全站搜尋「看全部讀後感結果」用：把關鍵字帶進讀後感區 */
+window.yuFilterReviews=k=>{q=k;$('#q').value=k;cat='全部';star=0;syncStars();chips();shown=N();render();jump('#reviews')};
+function starCounts(){const n={};all.forEach(b=>{const r=(String(b.rating).match(/★/g)||[]).length;n[r]=(n[r]||0)+1});n[0]=all.length;document.querySelectorAll('.legend .star').forEach(x=>{const sm=x.querySelector('small');if(sm)sm.textContent=n[x.dataset.r]||0})}
 $('#q').addEventListener('input',e=>{q=e.target.value;shown=N();render()});
 $('#moreBtn').addEventListener('click',()=>{shown+=N();render()});
 $('#lessBtn').addEventListener('click',()=>{shown=N();render();jump('#reviews')});
@@ -753,7 +813,7 @@ Promise.all([fetch('reads.json').then(r=>r.json()),cfgP]).then(([d,c])=>{
 (()=>{
 const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const sel=['.no','#about h2','#about .two>div>p','#about .creed','.photo','.statband .st',
- '#reviews h2','#reviews .muted','#reviews .tools','#reviews .chips',
+ '#reviews h2','#reviews .muted','#reviews .filters',
  '#party h2','#party .motto','#party .two>div>p','#party .btns','#partyCards .card','.gal-head','.gal button',
  '#lists h2','#lists .muted','#listCards .card','#podcast h2','#podcast .muted','#podcast .btns',
  '#support h2','#support .two>div>p','#support .btns','#contact h2','#contact .wrap>p','#contact .row','.fbrand'].join(',');
@@ -793,6 +853,60 @@ fetch('events.json').then(r=>r.json()).then(d=>{
  $('#evX').addEventListener('click',close);box.addEventListener('click',e=>{if(e.target===box)close()});
  addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('on'))close()});
 }).catch(()=>{});
+})();
+</script>
+<script>
+/* ===== 全站搜尋：讀後感、活動紀錄、書單、網站各區 ===== */
+(()=>{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const flat=s=>String(s||'').replace(/\s+/g,' ').trim();
+const gs=$('#gs'),inp=$('#gsQ'),body=$('#gsBody');
+let books=[],events=[],ready=false,last=null;
+const SECTIONS=[
+ {t:'關於 Yu聿',d:'獨立內容創作者、《書蟲派對》主辦人、《尼采一下》主持人',k:'關於 介紹 yu聿 主辦人 創作者',h:'#about'},
+ {t:'書蟲派對・閱讀社群',d:'線上 LINE 社群與台灣各地的實體讀書會',k:'書蟲派對 讀書會 社群 line 聚會 報名',h:'#party'},
+ {t:'主題書單',d:'萬聖節書單、彩虹書單、每人此生必看書單、絕版書單',k:'書單 萬聖節 彩虹 此生必看 絕版 推薦',h:'#lists'},
+ {t:'《尼采一下》Podcast',d:'用日常的語言聊哲學',k:'尼采一下 尼采 podcast 哲學 spotify apple',h:'#podcast'},
+ {t:'支持 yu聿',d:'抖內支持、所有連結',k:'支持 抖內 贊助 portaly',h:'#support'},
+ {t:'合作洽談',d:'合作邀約、試讀、活動洽詢',k:'合作 邀約 試讀 洽詢 email 聯絡',h:'#contact'}];
+const load=()=>ready?Promise.resolve():Promise.all([
+  fetch('/reads.json').then(r=>r.json()).catch(()=>({books:[]})),
+  fetch('/events.json').then(r=>r.json()).catch(()=>({events:[]}))]).then(([r,e])=>{
+  books=(r.books||[]).filter(b=>b&&b.id&&b.title);
+  const seen={};
+  events=(e.events||[]).filter(x=>x&&x.title&&flat(x.text)).map(x=>{const d=String(x.date||'').trim().replace(/[./]/g,'-');let slug=/^\d{4}-\d{2}-\d{2}$/.test(d)?d:'event';seen[slug]=(seen[slug]||0)+1;if(seen[slug]>1)slug+='-'+seen[slug];return {...x,url:'/party/'+slug+'/'}});
+  ready=true;});
+const hl=(text,k)=>{const t=String(text||'');if(!k)return esc(t);const i=t.toLowerCase().indexOf(k);if(i<0)return esc(t);return esc(t.slice(0,i))+'<mark>'+esc(t.slice(i,i+k.length))+'</mark>'+esc(t.slice(i+k.length))};
+const snip=(text,k)=>{const t=flat(text);const i=t.toLowerCase().indexOf(k);if(i<0)return '';const a=Math.max(0,i-18);return (a?'…':'')+hl(t.slice(a,i+k.length+36),k)+'…'};
+const src=p=>!p||/^(https?:|\/)/.test(p)?p:'/'+p;
+function draw(){
+  const k=inp.value.trim().toLowerCase();
+  if(!k){body.innerHTML='<div class="gsg"><h4>快速前往</h4><div class="gsquick"><a href="/book/">讀後感書庫</a><a href="/party/">活動紀錄</a><a href="#lists" data-h>主題書單</a><a href="#podcast" data-h>尼采一下</a><a href="#party" data-h>加入書蟲派對</a></div></div><p class="gsempty">輸入書名、作者、地點或任何關鍵字</p>';return}
+  const score=b=>{const T=b.title.toLowerCase(),A=String(b.author).toLowerCase();return T.includes(k)?3:A.includes(k)?2:(String(b.category)+b.quote).toLowerCase().includes(k)?1:String(b.note).toLowerCase().includes(k)?0.5:0};
+  const R=books.map(b=>[score(b),b]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+  const E=events.filter(e=>(e.title+' '+e.place+' '+e.date+' '+e.text).toLowerCase().includes(k));
+  const S=SECTIONS.filter(x=>(x.t+' '+x.d+' '+x.k).toLowerCase().includes(k));
+  let h='';
+  if(R.length)h+=`<div class="gsg"><h4>讀後感・${R.length} 篇</h4>${R.slice(0,8).map(b=>{const sub=b.title.toLowerCase().includes(k)||String(b.author).toLowerCase().includes(k)?esc([b.date,b.category,(String(b.rating).match(/★/g)||[]).join('')].filter(Boolean).join('・')):snip(b.quote+' '+b.note,k);
+    return `<a class="gsr" href="/book/${encodeURIComponent(b.id)}/">${b.cover?`<img src="${esc(src(b.cover))}" alt="" loading="lazy">`:'<span></span>'}<span><b>${hl(b.title,k)}</b><small>${hl(b.author,k)}</small><small>${sub}</small></span></a>`}).join('')}${R.length>8?`<button type="button" class="gsall" data-all>在讀後感區看全部 ${R.length} 篇 →</button>`:''}</div>`;
+  if(E.length)h+=`<div class="gsg"><h4>活動紀錄・${E.length} 場</h4>${E.slice(0,6).map(e=>`<a class="gsr" href="${e.url}">${(e.photos||[])[0]?`<img src="/img/${esc(e.photos[0])}" alt="" loading="lazy">`:'<span></span>'}<span><b>${hl(e.title,k)}</b><small>${esc([e.date,e.place].filter(Boolean).join('・'))}</small><small>${snip(e.text,k)}</small></span></a>`).join('')}</div>`;
+  if(S.length)h+=`<div class="gsg"><h4>網站內容</h4>${S.map(x=>`<a class="gsr noimg" href="${x.h}" data-h><span><b>${hl(x.t,k)}</b><small>${esc(x.d)}</small></span></a>`).join('')}</div>`;
+  body.innerHTML=h||`<p class="gsempty">找不到「${esc(inp.value.trim())}」，換個關鍵字試試。</p>`;
+}
+const open=()=>{last=document.activeElement;gs.hidden=false;document.body.classList.add('lock');inp.focus();load().then(draw);draw()};
+const close=go=>{gs.hidden=true;if(!document.querySelector('.reader.on,.viewer.on,.lb.on'))document.body.classList.remove('lock');if(!go)last?.focus?.({preventScroll:true})};
+$('#gsNav').addEventListener('click',open);
+$('#gsX').addEventListener('click',close);
+gs.addEventListener('click',e=>{if(e.target===gs)return close();
+  const a=e.target.closest('a[data-h]');if(a){e.preventDefault();close(true);const t=document.querySelector(a.getAttribute('href'));if(t)requestAnimationFrame(()=>scrollTo({top:t.getBoundingClientRect().top+scrollY-64,behavior:'instant'}));return}
+  if(e.target.closest('[data-all]')){const k=inp.value.trim();close(true);window.yuFilterReviews&&window.yuFilterReviews(k)}});
+inp.addEventListener('input',draw);
+if(location.hash==='#search'){history.replaceState(null,'',location.pathname);open()}
+inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const a=body.querySelector('a.gsr');if(a)a.click()}});
+addEventListener('keydown',e=>{
+  if(!gs.hidden&&e.key==='Escape'){e.stopImmediatePropagation();close();return}
+  if(gs.hidden&&e.key==='/'&&!/input|textarea/i.test(document.activeElement.tagName)&&!document.querySelector('.reader.on')){e.preventDefault();open()}},true);
 })();
 </script>
 </body>

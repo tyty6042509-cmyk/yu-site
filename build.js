@@ -56,7 +56,11 @@ h1,h2,h3{font-family:"Noto Serif TC",serif;font-weight:500;letter-spacing:.04em;
 nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 nav .in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:8px max(5vw,16px)}
 .logo{margin-right:auto;display:flex;align-items:center;min-height:44px}.logo img{height:28px;width:auto}
-nav .lk{display:flex;gap:18px;font-size:13px;letter-spacing:.12em}nav .lk a{text-decoration:none;padding:8px 0}nav .lk a:hover{color:var(--gold)}
+nav .lk{display:flex;gap:18px;font-size:13px;letter-spacing:.12em}nav .lk a{text-decoration:none;padding:8px 0}
+.nsearch{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid var(--ink);border-radius:999px;text-decoration:none;font-size:13px;letter-spacing:.12em}
+.nsearch svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.nsearch:hover{background:var(--ink);color:var(--bg)}
+@media(max-width:600px){.nsearch{width:42px;padding:0;justify-content:center}.nsearch span{display:none}}nav .lk a:hover{color:var(--gold)}
 main{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,64px) max(5vw,16px) 40px}
 .crumb{font-size:12px;letter-spacing:.14em;color:var(--muted);margin:0 0 22px}.crumb a{text-decoration:none}.crumb a:hover{color:var(--gold)}
 .rmeta{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--muted)}
@@ -188,6 +192,7 @@ ${extra}
 <nav><div class="in">
   <a class="logo" href="/"><img class="ink" src="/img/yu-logo.png" alt="Yu聿"></a>
   <div class="lk"><a href="/#reviews">最近讀了什麼</a><a href="/book/">讀後感書庫</a><a href="/party/">書蟲派對</a><a href="/#podcast">尼采一下</a></div>
+  <a class="nsearch" href="/#search" aria-label="搜尋全站"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>搜尋</span></a>
 </div></nav>
 `;
 
