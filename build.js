@@ -246,8 +246,72 @@ const cta = () => `
 
 const mini = b => `<a href="${bookUrl(b)}">${b.cover ? `<img src="${esc(rel(b.cover))}" alt="" loading="lazy">` : '<span></span>'}<span><b>${esc(b.title)}</b><small>${esc(b.author)}${stars(b.rating) ? `・<span class="stars">${'★'.repeat(stars(b.rating))}</span>` : ''}</small></span></a>`;
 
+
+/* ---------- 防呆檢查：資料有問題時停止部署，網站維持上一個正常版本 ---------- */
+function validate() {
+  const crypto = require('crypto');
+  const errors = [], warns = [];
+  const readJSON = (f, need) => {
+    const fp = path.join(ROOT, f);
+    if (!fs.existsSync(fp)) { (need ? errors : warns).push(`找不到 ${f}`); return null; }
+    try { return JSON.parse(fs.readFileSync(fp, 'utf8')); }
+    catch (e) { errors.push(`${f} 格式錯誤，無法讀取（常見原因：少了逗號、引號或括號）：${e.message}`); return null; }
+  };
+  const exists = rel => rel && fs.existsSync(path.join(ROOT, rel.replace(/^\/+/, '')));
+  const hashOf = rel => crypto.createHash('md5').update(fs.readFileSync(path.join(ROOT, rel.replace(/^\/+/, '')))).digest('hex');
+
+  // reads.json
+  const data = readJSON('reads.json', true);
+  if (data) {
+    const list = Array.isArray(data.books) ? data.books : (errors.push('reads.json 裡找不到 books 清單'), []);
+    const ids = {}, coverUse = {}, known = new Set(Object.keys(CC));
+    list.forEach((b, i) => {
+      const name = b && b.title ? `《${b.title}》` : `第 ${i + 1} 筆`;
+      if (!b || !b.title) { errors.push(`reads.json 第 ${i + 1} 筆沒有書名`); return; }
+      if (!b.id) errors.push(`${name} 沒有 id`);
+      else if (!/^[a-z0-9]+$/.test(b.id)) errors.push(`${name} 的 id「${b.id}」只能用小寫英文和數字`);
+      else if (ids[b.id]) errors.push(`${name} 和 ${ids[b.id]} 的 id 重複了：${b.id}`);
+      else ids[b.id] = name;
+      if (b.date && !/^\d{4}-\d{2}-\d{2}$/.test(b.date)) errors.push(`${name} 的日期「${b.date}」格式要像 2026-11-26`);
+      if (b.rating && !/^[★☆]{1,5}$/.test(b.rating)) errors.push(`${name} 的星等「${b.rating}」只能用 ★ 和 ☆`);
+      if (b.cover) {
+        if (!exists(b.cover)) errors.push(`${name} 的書封檔案不存在：${b.cover}（檔名或資料夾放錯了？）`);
+        else (coverUse[b.cover] = coverUse[b.cover] || []).push(name);
+      } else warns.push(`${name} 沒有書封`);
+      if (!b.rating) warns.push(`${name} 還沒有星等`);
+      if (b.category && !known.has(b.category)) warns.push(`${name} 的類別「${b.category}」是新類別，確認一下有沒有打錯字`);
+      if (!flat(b.note)) warns.push(`${name} 沒有讀後感內文，不會產生獨立頁面`);
+    });
+    Object.entries(coverUse).filter(([, v]) => v.length > 1).forEach(([c, v]) => warns.push(`${v.join('、')} 用的是同一個書封檔案 ${c}，確認一下是不是故意的`));
+    // 不同檔名、內容卻一模一樣 → 很可能上傳時把別本的圖蓋掉了
+    const byHash = {};
+    Object.keys(coverUse).forEach(c => { const h = hashOf(c); (byHash[h] = byHash[h] || []).push(c); });
+    Object.values(byHash).filter(v => v.length > 1).forEach(v =>
+      errors.push(`這幾個書封檔案的圖片一模一樣：${v.map(c => `${c}（${coverUse[c].join('、')}）`).join('、')}。很可能上傳時把其中一張的檔案蓋掉了，請重新上傳正確的圖`));
+  }
+
+  // events.json
+  const ev = readJSON('events.json', false);
+  if (ev) {
+    (ev.events || []).forEach((e, i) => {
+      const name = e && e.title ? `活動「${e.title}」` : `events.json 第 ${i + 1} 筆`;
+      if (e.date && !/^\d{4}[.\-/]\d{2}[.\-/]\d{2}$/.test(String(e.date).trim())) errors.push(`${name} 的日期「${e.date}」格式要像 2026.09.05`);
+      (e.photos || []).forEach(f => { if (!exists('img/' + f)) errors.push(`${name} 的照片不存在：img/${f}`); });
+    });
+  }
+  readJSON('config.json', false);
+
+  if (warns.length) console.log(`\n⚠️  提醒（不影響部署）：\n` + warns.map(w => '   - ' + w).join('\n'));
+  if (errors.length) {
+    console.error(`\n❌ 發現 ${errors.length} 個問題，這次不會部署，網站維持上一個正常的版本：\n` + errors.map(e => '   - ' + e).join('\n') + '\n');
+    process.exit(1);
+  }
+  console.log(`\n✔ 資料檢查通過`);
+}
+
 /* ---------- build ---------- */
 function main() {
+  validate();
   const data = JSON.parse(fs.readFileSync(path.join(ROOT, 'reads.json'), 'utf8'));
   const books = (data.books || []).filter(b => b && b.id && b.title)
     .map(b => ({ ...b, title: String(b.title).trim().replace(/^《(.*)》$/, '$1'), category: b.category || '未分類' })); // 書名本身已含《》時去掉，避免變成《《…》》

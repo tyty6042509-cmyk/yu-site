@@ -272,6 +272,11 @@ nav{background:color-mix(in srgb,var(--bg) 88%,transparent)}
 /* stats band */
 .statband{background:#1c1e23;color:#e9e7e3}
 .strip{height:54px;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#2a2620,#4a4034 50%,#2a2620);font-size:11px;letter-spacing:.5em;color:#d8cdb8}
+.podline{grid-column:1/-1;justify-self:center;display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:6px 4px;color:#8e8c87;font-size:12px;letter-spacing:.12em;text-decoration:none;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+.podline svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5}
+.podline b{font:400 14px 'Noto Serif TC',serif;color:#d8cdb8;letter-spacing:.04em}
+.podline:hover{color:#e9e7e3;border-color:#5a5346}
+.podline:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .stats4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding:clamp(48px,7vw,96px) max(5vw,16px)}
 .st{border:1px solid #2f3137;border-radius:4px;padding:22px 22px 24px;display:flex;flex-direction:column;gap:6px;transition:border-color .3s,background .3s}
 .st:hover{border-color:#5a5346;background:#212329}
@@ -506,7 +511,8 @@ a.rcard{text-decoration:none;color:inherit}
     <div class="st"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5"/></svg><strong id="yearCount">189</strong><span>2026 年已讀（本）</span></div>
     <div class="st"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM9 9h6M9 13h6"/></svg><strong id="reviewCount">160</strong><span>篇讀後感</span></div>
     <div class="st"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/></svg><strong id="eventCount">23</strong><span>實體活動(場)</span></div>
-    <div class="st"><svg viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg><strong id="podCount">30+</strong><span>Podcast《尼采一下》</span></div>
+    <div class="st"><svg viewBox="0 0 24 24"><path d="M4 5h11v8H8l-4 3z"/><path d="M15 9h5v8l-3-2h-6v-2"/></svg><strong id="onlineCount">60+</strong><span>線上週末雜談(場)</span></div>
+    <a class="podline" href="#podcast"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg>另有哲學 Podcast《尼采一下》<b id="podCount">30+</b> 集 →</a>
   </div>
 </section>
 
@@ -533,7 +539,7 @@ a.rcard{text-decoration:none;color:inherit}
       <p class="motto">個體可見，共同構成整體</p>
     </div>
     <div>
-      <p>一個讓每個人的閱讀都被看見的社群。線上在 LINE 社群分享，線下在台灣各地舉辦讀書聚會。</p>
+      <p>一個讓每個人的閱讀都被看見的社群。線上在 LINE 社群分享，每個週末固定舉辦線上雜談，已經累積 <span id="onlineCount2">60+</span> 場；線下則在台灣各地舉辦讀書聚會。</p>
       <div class="btns"><a class="btn" href="https://line.me/ti/g2/36DOh-WVhRweSjRsBYB60fqVSt74QQEZLzNZzw">加入 LINE 社群</a></div>
     </div>
   </div>
@@ -810,7 +816,7 @@ const cfgP=fetch('config.json').then(r=>r.json()).catch(()=>({}));
 Promise.all([fetch('reads.json').then(r=>r.json()),cfgP]).then(([d,c])=>{
   all=d.books.map(b=>({...b,cat:b.category||'未分類'}));
   $('#yearCount').textContent=c.yearCount??d.yearCount;$('#reviewCount').textContent=c.reviewCount??all.filter(b=>b.note).length;
-  if(c.eventCount)$('#eventCount').textContent=c.eventCount;if(c.podcastCount)$('#podCount').textContent=c.podcastCount;
+  if(c.eventCount)$('#eventCount').textContent=c.eventCount;if(c.podcastCount)$('#podCount').textContent=c.podcastCount;if(c.onlineCount){$('#onlineCount').textContent=c.onlineCount;$('#onlineCount2').textContent=c.onlineCount}
   AC=authorCount(all);chips();starCounts();render();
 }).catch(()=>{$('#rgrid').innerHTML='<p class="empty">讀後感暫時載入不了，請稍後再試。</p>'});
 }
